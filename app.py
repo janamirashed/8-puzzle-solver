@@ -37,7 +37,7 @@ def solve():
         return jsonify({"success": False, "error": f"unknown algorithm: {algorithm}"}), 400
 
     # no point running if it's already unsolvable
-    if not is_solvable(initial_state):
+    if is_solvable(initial_state) is False:
         return jsonify({"success": False, "error": "this puzzle is unsolvable"}), 200
 
     result = SOLVERS[algorithm](initial_state)

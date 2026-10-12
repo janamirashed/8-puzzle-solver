@@ -1,13 +1,107 @@
-<!-- index.html — UI placeholder -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>8-Puzzle Solver</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <!-- TODO: UI coming next -->
+  <div class="container">
+    <header class="header">
+      <h1 class="title">8-Puzzle Solver</h1>
+    </header>
+
+    <div class="grid-layout">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Puzzle Board</h2>
+          <span id="step-counter" class="step-counter">Step 0 / 0</span>
+        </div>
+
+        <div class="board-container">
+          <div id="board" class="board"></div>
+        </div>
+
+        <div id="move-status" class="move-status">Initial state</div>
+
+        <div class="btn-row">
+          <button id="btn-prev" class="btn" disabled>Prev</button>
+          <button id="btn-play" class="btn btn-primary" disabled>Play</button>
+          <button id="btn-next" class="btn" disabled>Next</button>
+        </div>
+      </section>
+
+      <section class="side-panel">
+        <div class="panel">
+          <h2>Configuration</h2>
+
+          <div class="field">
+            <label for="initial-state-input">Initial State</label>
+            <div class="input-row">
+              <input type="text" id="initial-state-input" value="1, 2, 5, 3, 4, 0, 6, 7, 8">
+              <button id="btn-random" class="btn">Random</button>
+            </div>
+            <span class="note">Enter numbers 0 to 8 separated by commas (0 is empty space)</span>
+          </div>
+
+          <div class="field">
+            <label for="algorithm-select">Algorithm</label>
+            <select id="algorithm-select">
+              <option value="astar_manhattan">A* (Manhattan Distance)</option>
+              <option value="astar_euclidean">A* (Euclidean Distance)</option>
+              <option value="bfs">BFS (Breadth-First Search)</option>
+              <option value="dfs">DFS (Depth-First Search)</option>
+              <option value="idfs">IDFS (Iterative Deepening Search)</option>
+            </select>
+          </div>
+
+          <div class="field-actions">
+            <button id="btn-solve" class="btn btn-primary btn-block">Solve</button>
+            <button id="btn-reset" class="btn btn-block">Reset</button>
+          </div>
+
+          <div id="alert-box" class="alert hidden"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Results</h2>
+          <table class="metrics-table">
+            <tbody>
+              <tr>
+                <td>Path to Goal (Moves)</td>
+                <td id="stat-moves">—</td>
+              </tr>
+              <tr>
+                <td>Cost of Path</td>
+                <td id="stat-cost">—</td>
+              </tr>
+              <tr>
+                <td>Nodes Expanded</td>
+                <td id="stat-nodes">—</td>
+              </tr>
+              <tr>
+                <td>Search Depth</td>
+                <td id="stat-depth">—</td>
+              </tr>
+              <tr>
+                <td>Running Time</td>
+                <td id="stat-time">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <h2>Path Trace</h2>
+          <div id="path-list" class="path-list">
+            <span class="muted">No solution loaded.</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
   <script src="/static/js/puzzle.js"></script>
 </body>
 </html>

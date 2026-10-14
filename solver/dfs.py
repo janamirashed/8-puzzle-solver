@@ -4,6 +4,7 @@ from .puzzle import PuzzleState, trace_path, is_solvable
 
 
 def solve(initial_board, depth_limit=50):
+    initial_board = tuple(initial_board)
     if not is_solvable(initial_board):
         return None
 
@@ -20,13 +21,19 @@ def solve(initial_board, depth_limit=50):
             "running_time": round(time.time() - start_time, 5),
         }
 
-    stack = [initial_state]
-    visited = {initial_state.board}
+    stack = [(initial_state, {initial_state.board})]
+    visited_depth = {}
     nodes_expanded = 0
     max_search_depth = 0
 
     while stack:
-        current = stack.pop()
+        current, path_visited = stack.pop()
+
+        # Skip if we already expanded this board at a shallower depth
+        if current.board in visited_depth and visited_depth[current.board] <= current.g:
+            continue
+
+        visited_depth[current.board] = current.g
         nodes_expanded += 1
 
         if current.g > max_search_depth:
@@ -35,7 +42,7 @@ def solve(initial_board, depth_limit=50):
         if current.is_goal():
             states = trace_path(current)
             path = [list(s.board) for s in states]
-            moves = [s.move.name.capitalize() for s in states if s.move is not None]
+            moves = [str(s.move.name if hasattr(s.move, "name") else s.move) for s in states[1:]]
             return {
                 "path": path,
                 "moves": moves,
@@ -46,10 +53,9 @@ def solve(initial_board, depth_limit=50):
             }
 
         if current.g < depth_limit:
-            # reverse children so they pop in natural order
+            # Reverse children so they pop in natural order
             for child in reversed(current.get_children()):
-                if child.board not in visited:
-                    visited.add(child.board)
-                    stack.append(child)
+                if child.board not in path_visited:
+                    stack.append((child, path_visited | {child.board}))
 
     return None

@@ -230,10 +230,18 @@ function clearSolution() {
   statTimeEl.textContent = '—';
 
   pathListEl.innerHTML = '<span class="muted">No solution loaded.</span>';
+
+  // restore flex so path trace panel stretches to match results panel height
+  const pathPanel = document.querySelector('.main-column .panel:last-child');
+  if (pathPanel) pathPanel.style.flex = '1';
 }
 
 // render step list
 function renderPathList() {
+  // release flex so panel sizes to its content after solve
+  const pathPanel = document.querySelector('.main-column .panel:last-child');
+  if (pathPanel) pathPanel.style.flex = 'none';
+
   pathListEl.innerHTML = '';
   solutionPath.forEach((_, idx) => {
     const chip = document.createElement('span');
@@ -378,4 +386,4 @@ inputEl.addEventListener('change', () => {
 
 // initial render
 renderBoard(currentBoard);
-updatePlaybackUI();
+clearSolution();

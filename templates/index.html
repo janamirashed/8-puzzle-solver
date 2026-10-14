@@ -13,22 +13,31 @@
     </header>
 
     <div class="grid-layout">
-      <section class="panel">
-        <div class="panel-header">
-          <h2>Puzzle Board</h2>
-          <span id="step-counter" class="step-counter">Step 0 / 0</span>
+      <section class="main-column">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Puzzle Board</h2>
+            <span id="step-counter" class="step-counter">Step 0 / 0</span>
+          </div>
+
+          <div class="board-container">
+            <div id="board" class="board"></div>
+          </div>
+
+          <div id="move-status" class="move-status">Initial state</div>
+
+          <div class="btn-row">
+            <button id="btn-prev" class="btn" disabled>Prev</button>
+            <button id="btn-play" class="btn btn-primary" disabled>Play</button>
+            <button id="btn-next" class="btn" disabled>Next</button>
+          </div>
         </div>
 
-        <div class="board-container">
-          <div id="board" class="board"></div>
-        </div>
-
-        <div id="move-status" class="move-status">Initial state</div>
-
-        <div class="btn-row">
-          <button id="btn-prev" class="btn" disabled>Prev</button>
-          <button id="btn-play" class="btn btn-primary" disabled>Play</button>
-          <button id="btn-next" class="btn" disabled>Next</button>
+        <div class="panel">
+          <h2>Path Trace</h2>
+          <div id="path-list" class="path-list">
+            <span class="muted">No solution loaded.</span>
+          </div>
         </div>
       </section>
 
@@ -90,13 +99,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <div class="panel">
-          <h2>Path Trace</h2>
-          <div id="path-list" class="path-list">
-            <span class="muted">No solution loaded.</span>
-          </div>
         </div>
       </section>
     </div>

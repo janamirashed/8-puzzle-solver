@@ -66,12 +66,19 @@ function handleManualMove(tileIdx) {
 
   const isAdjacent = (Math.abs(tileRow - blankRow) + Math.abs(tileCol - blankCol)) === 1;
   if (isAdjacent) {
-    const prev = [...currentBoard];
-    currentBoard[blankIdx] = currentBoard[tileIdx];
+    const movedVal = currentBoard[tileIdx];
+    currentBoard[blankIdx] = movedVal;
     currentBoard[tileIdx] = 0;
     inputEl.value = currentBoard.join(', ');
-    renderBoard(currentBoard, prev);
     clearSolution();
+    renderBoard(currentBoard, movedVal);
+
+    // check if user solved it by hand
+    const isGoal = currentBoard.every((val, i) => val === i);
+    if (isGoal) {
+      showAlert('good job! you solved it by hand, well done! :)', 'success');
+      moveStatusEl.textContent = 'solved by hand! well done! :)';
+    }
   }
 }
 

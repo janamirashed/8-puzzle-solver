@@ -78,13 +78,27 @@ body {
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
 }
 
 @media (max-width: 760px) {
   .grid-layout {
     grid-template-columns: 1fr;
   }
+}
+
+.main-column,
+.side-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-column .panel:last-child,
+.side-panel .panel:last-child {
+  flex: 1;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .panel {

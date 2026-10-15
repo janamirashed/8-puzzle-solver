@@ -62,7 +62,7 @@ def solve(initial_board, heuristic="manhattan"):
             states = trace_path(current)
             return {
                 "path": [list(s.board) for s in states],
-                "moves": [s.move.label for s in states[1:]],
+                "moves": [s.move.name for s in states[1:]],
                 "cost": current.g,
                 "nodes_expanded": nodes_expanded,
                 "search_depth": max_search_depth,

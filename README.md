@@ -2,7 +2,7 @@
 
 # 8-Puzzle Solver
 
-*An interactive 8-puzzle solver that visualizes BFS, DFS, IDFS, and A search algorithms — with step-by-step animation, manual play mode, and a clean web interface served by Flask.*
+*An interactive 8-puzzle solver that visualizes BFS, DFS, IDFS, and $A^*$ search algorithms — with step-by-step animation, manual play mode, and a clean web interface served by Flask.*
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
@@ -14,7 +14,9 @@
 
 ## Overview
 
-The 8-puzzle solver takes any valid initial board configuration and finds the solution path using one of five algorithms: BFS, DFS (depth-limited), IDFS, A* with Manhattan distance, or A* with Euclidean distance. The frontend animates each step of the solution at a fixed pace, showing the move direction and step count at every frame. Users can also solve the puzzle manually by clicking tiles — the board detects when the goal state is reached and responds accordingly. Results include path cost, nodes expanded, search depth, and running time.
+The 8-puzzle solver takes any valid initial board configuration and finds the solution path using one of five algorithms: BFS, DFS (depth-limited), IDFS, A* with Manhattan distance, or A* with Euclidean distance. It tracks internal execution state through an active tracer, logging stack/queue contents, node expansions, and child state transitions at every step. The frontend animates each step of the solution at a fixed pace, showing the move direction and step count at every frame. Users can also solve the puzzle manually by clicking tiles. 
+
+The board detects when the goal state is reached and responds accordingly. Results include path cost, nodes expanded, search depth, running time, and a full step-by-step state trace.
 
 ---
 
@@ -22,6 +24,10 @@ The 8-puzzle solver takes any valid initial board configuration and finds the so
 
 <p align="center">
   <img src="assets/demo.png" alt="8-Puzzle Solver Interface" width="100%" />
+</p>
+
+<p align="center">
+  <img src="assets/trace.png" alt="8-Puzzle trace" width="100%" />
 </p>
 
 ---
@@ -34,6 +40,7 @@ The 8-puzzle solver takes any valid initial board configuration and finds the so
 - **Solvability check:** rejects unsolvable boards before running any search
 - **Result metrics:** path cost, nodes expanded, search depth, and running time per solve
 - **Path trace panel:** lists every move direction in the solution sequence
+- **Real-time execution tracer:** records internal data structure snapshots (stack/queue state, node statuses, and child expansions) at every step of the search.
 
 ---
 

@@ -1,13 +1,12 @@
-# dfs.py
 import time
 from itertools import islice
 from .puzzle import PuzzleState, trace_path, is_solvable
 from .tracer import Tracer
 
 def peek(stack, n):
-    return [state for state, _ in stack[-n:]]
+    return [state for state in stack[-n:]]
 
-def solve(initial_board, depth_limit=50, tracer = None):
+def solve(initial_board, depth_limit=50, tracer=None):
     initial_board = tuple(initial_board)
     if not is_solvable(initial_board):
         return None
@@ -15,8 +14,8 @@ def solve(initial_board, depth_limit=50, tracer = None):
     start_time = time.time()
     initial_state = PuzzleState(initial_board)
 
-    if tracer is None:
-        tracer = Tracer("Stack (bottom → top)", peek, next_at="last")
+    if tracer is None: tracer = Tracer("Stack (bottom → top)", peek, next_at="last")
+
     if initial_state.is_goal():
         return {
             "path": [list(initial_board)],
@@ -28,19 +27,13 @@ def solve(initial_board, depth_limit=50, tracer = None):
             "trace": tracer.result(),
         }
 
-    stack = [(initial_state, {initial_state.board})]
-    visited_depth = {}
+    stack = [initial_state]
+    visited = {initial_state.board}
     nodes_expanded = 0
     max_search_depth = 0
 
     while stack:
-        current, path_visited = stack.pop()
-
-        # Skip if we already expanded this board at a shallower depth
-        if current.board in visited_depth and visited_depth[current.board] <= current.g:
-            continue
-
-        visited_depth[current.board] = current.g
+        current = stack.pop()
         nodes_expanded += 1
         tracer.begin_step(current)
         if current.g > max_search_depth:
@@ -61,15 +54,19 @@ def solve(initial_board, depth_limit=50, tracer = None):
             }
 
         if current.g < depth_limit:
-            # Reverse children so they pop in natural order
+            # Reverse children so they are popped in natural expansion order
             for child in reversed(current.get_children()):
-                if child.board in path_visited:
-                    status = "cycle"  # already on the current path
+                if child.board in visited:
+                    tracer.child(child, "visited")
                 else:
-                    status = "queued"
-                    stack.append((child, path_visited | {child.board}))
-                tracer.child(child, status)
+                    visited.add(child.board)
+                    stack.append(child)
+                    tracer.child(child, "queued")
 
-        tracer.end_step(stack, len(visited_depth))
+        tracer.end_step(stack, len(visited))
 
     return None
+
+
+
+# 4, 3, 2, 1, 7, 5, 0, 6, 8

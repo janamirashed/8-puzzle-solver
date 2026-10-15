@@ -429,3 +429,234 @@ select:focus {
   font-size: 0.8rem;
   color: var(--text-muted);
 }
+
+/* ================= search trace ================= */
+.trace-panel {
+  margin-top: 20px;
+  font-family: var(--font-mono);
+}
+
+.trace-panel > summary {
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+
+/* no inner scrolling: the page scrolls instead */
+.trace-body {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trace-head {
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: #f8fafc;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+}
+
+/* one card per step */
+.trace-step {
+  display: block;
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 10px 14px 12px;
+  font-size: 0.78rem;
+}
+
+.trace-step > summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.trace-step[open] > summary {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.trace-label {
+  margin: 14px 0 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--card-border);
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+/* ---- tree ---- */
+.tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-items: safe center;   /* wide rows scroll instead of getting clipped on the left */
+  overflow-x: auto;
+  padding: 4px 4px 10px;
+}
+
+.node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: #ffffff;
+  border: 2px solid var(--card-border);
+  border-radius: var(--radius-md);
+}
+
+.node-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+}
+
+.node-parent   { border-color: #ec4899; background: #fdf2f8; }
+.node-goal     { border-color: #16a34a; background: #f0fdf4; }
+.node-queued   { border-color: #86efac; background: #f0fdf4; }
+.node-explored { border-color: #cbd5e1; background: #f1f5f9; }
+.node-worse    { border-color: #fcd34d; background: #fffbeb; }
+
+/* equal-width child cards so the row lines up */
+.tree-child .node {
+  width: 132px;
+}
+
+.node-status {
+  width: 100%;
+  min-height: 2.5em;
+  text-align: center;
+  font-size: 0.66rem;
+  line-height: 1.25;
+  color: var(--text-muted);
+}
+
+.node-costs {
+  display: flex;
+  gap: 4px;
+}
+
+.cost {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.cost-f {
+  background: #ec4899;
+  color: #ffffff;
+}
+
+/* connector lines */
+.tree-stem {
+  width: 0;
+  height: 18px;
+  border-left: 2px solid #cbd5e1;
+}
+
+.tree-children {
+  display: flex;
+  justify-content: center;
+}
+
+.tree-child {
+  position: relative;
+  padding: 18px 7px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tree-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 18px;
+  border-left: 2px solid #cbd5e1;
+  transform: translateX(-1px);
+}
+
+.tree-child::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-top: 2px solid #cbd5e1;
+}
+
+.tree-child:first-child::after { left: 50%; }
+.tree-child:last-child::after  { right: 50%; }
+.tree-child:only-child::after  { display: none; }
+
+/* ---- mini boards ---- */
+.mini-board {
+  --c: 26px;
+  display: grid;
+  grid-template-columns: repeat(3, var(--c));
+  gap: 2px;
+  padding: 3px;
+  background: var(--tray-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+}
+
+.mini-board.sm {
+  --c: 18px;
+}
+
+.mini-cell {
+  height: var(--c);
+  font-size: calc(var(--c) * 0.5);
+  border-radius: 4px;
+  cursor: default;
+  box-shadow: none;
+}
+
+.mini-cell.blank {
+  border-width: 1px;
+}
+
+.mini-cell.highlight {
+  outline-width: 2px;
+  outline-offset: -1px;
+  box-shadow: none;
+}
+
+/* ---- frontier ---- */
+.frontier-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.frontier-item {
+  padding: 4px 6px;
+}
+
+.frontier-next {
+  border-color: #ec4899;
+}
+
+.cost-depth {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.node-explored, .node-visited { border-color: #cbd5e1; background: #f1f5f9; }

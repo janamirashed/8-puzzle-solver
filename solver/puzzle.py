@@ -16,7 +16,9 @@ class Move(Enum):
     def dc(self):
         return self.value[1]
 
-
+    @property
+    def name(self):
+        return super().name.capitalize()
 
 class PuzzleState:
     # tracks the board, parent state, move made, cost g(n), and f(n) for A*

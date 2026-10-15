@@ -30,6 +30,10 @@ const btnSolve = document.getElementById('btn-solve');
 const btnReset = document.getElementById('btn-reset');
 const btnRandom = document.getElementById('btn-random');
 
+const tracePanelEl = document.getElementById('trace-panel');
+const traceBodyEl = document.getElementById('trace-body');
+const traceNoteEl = document.getElementById('trace-note');
+
 // render 3x3 board
 function renderBoard(board, highlightTile = null) {
   boardEl.innerHTML = '';
@@ -234,6 +238,7 @@ function clearSolution() {
   // restore flex so path trace panel stretches to match results panel height
   const pathPanel = document.querySelector('.main-column .panel:last-child');
   if (pathPanel) pathPanel.style.flex = '1';
+  clearTrace();
 }
 
 // render step list
@@ -253,6 +258,135 @@ function renderPathList() {
     });
     pathListEl.appendChild(chip);
   });
+}
+
+// ---------- search trace ----------
+const CHILD_STATUS = {
+  queued: 'added to frontier',
+  explored: 'skipped: already explored',
+  visited: 'skipped: already visited',
+  worse: 'skipped: cheaper path queued',
+  cycle: 'skipped: already on current path',
+  goal: 'goal reached',
+};
+
+function makeEl(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+// small 3x3 board; movedIdx outlines the tile that just moved
+function miniBoard(board, small = false, movedIdx = null) {
+  const wrap = makeEl('div', 'mini-board' + (small ? ' sm' : ''));
+  board.forEach((val, idx) => {
+    const cell = makeEl('div', 'tile mini-cell');
+    if (val === 0) {
+      cell.classList.add('blank');
+    } else {
+      cell.textContent = val;
+      cell.dataset.val = val;
+      if (idx === movedIdx) cell.classList.add('highlight');
+    }
+    wrap.appendChild(cell);
+  });
+  return wrap;
+}
+
+function costBadges(g, h, f) {
+  const row = makeEl('div', 'node-costs');
+  [['g', g], ['h', h], ['f', f]].forEach(([k, v]) => {
+    row.appendChild(makeEl('span', `cost cost-${k}`, `${k}=${v ?? '—'}`));
+  });
+  return row;
+}
+
+function clearTrace() {
+  traceBodyEl.innerHTML = '';
+  traceNoteEl.textContent = '';
+  tracePanelEl.open = false;
+  tracePanelEl.classList.add('hidden');
+}
+
+function renderTrace(trace) {
+  clearTrace();
+  if (!trace) return;
+  tracePanelEl.classList.remove('hidden');
+
+  // heuristic first
+  if (trace.heuristic) {
+    traceBodyEl.appendChild(
+      makeEl('div', 'trace-head', `Heuristic: ${trace.heuristic} | h(start) = ${trace.initial_h}`)
+    );
+  }
+
+  trace.steps.forEach((s, i) => {
+    const d = makeEl('details', 'trace-step');
+    if (i === 0) d.open = true;
+    d.appendChild(makeEl(
+      'summary', null,
+      `Step ${s.step}` + (s.label ? ` [${s.label}]` : '') +
+      (s.goal ? ' | goal reached' : ' | expand node') +
+      (s.f !== undefined ? ` (f=${s.f})` : ` (depth=${s.g})`)
+    ));
+
+    const tree = makeEl('div', 'tree');
+
+    // the expanded node
+    const node = makeEl('div', 'node node-parent' + (s.goal ? ' node-goal' : ''));
+    node.appendChild(makeEl('div', 'node-title', s.goal ? 'Goal' : 'Expanded node'));
+    node.appendChild(miniBoard(s.board));
+    node.appendChild(costBadges(s.g, s.h, s.f));
+    tree.appendChild(node);
+
+    // its children
+    if (s.children && s.children.length) {
+      tree.appendChild(makeEl('div', 'tree-stem'));
+      const row = makeEl('div', 'tree-children');
+      const blankIdx = s.board.indexOf(0);   // the tile that moved now sits here in the child
+      s.children.forEach(c => {
+        const col = makeEl('div', 'tree-child');
+        const card = makeEl('div', `node node-${c.status}`);
+        card.appendChild(makeEl('div', 'node-title', c.move));
+        card.appendChild(miniBoard(c.board, false, blankIdx));
+        card.appendChild(costBadges(c.g, c.h, c.f));
+        card.appendChild(makeEl('div', 'node-status', CHILD_STATUS[c.status] || c.status));
+        col.appendChild(card);
+        row.appendChild(col);
+      });
+      tree.appendChild(row);
+    }
+    d.appendChild(tree);
+
+    // contents of the data structure
+    if (s.frontier) {
+      const nextLast = trace.next_at === 'last';     // stacks: the next item is the last card
+      d.appendChild(makeEl(
+        'div', 'trace-label',
+        `${trace.structure || 'Frontier'} after this step: ${s.frontier_size} entries, explored: ${s.explored_size}` +
+        (s.frontier.length < s.frontier_size ? ` (showing ${nextLast ? 'top' : 'first'} ${s.frontier.length})` : '')
+      ));
+      const fr = makeEl('div', 'frontier-row');
+      const m = s.frontier.length;
+      s.frontier.forEach((e, k) => {
+        const order = nextLast ? m - k : k + 1;      // 1 = the next one to leave the structure
+        const item = makeEl('div', 'node frontier-item' + (order === 1 ? ' frontier-next' : ''));
+        item.appendChild(makeEl('div', 'node-title', order === 1 ? '#1 · next' : `#${order}`));
+        item.appendChild(miniBoard(e.board, true));
+        item.appendChild(costBadges(e.g, e.h, e.f));
+        fr.appendChild(item);
+      });
+      d.appendChild(fr);
+    }
+
+    traceBodyEl.appendChild(d);
+  });
+
+  if (trace.truncated) {
+    traceBodyEl.appendChild(makeEl('div', 'muted', `Trace limited to the first ${trace.steps.length} steps.`));
+  }
+  traceNoteEl.textContent = `(${trace.steps.length} steps)`;
 }
 
 // solve button click
@@ -311,6 +445,7 @@ async function handleSolve() {
     updatePlaybackUI();
     showAlert(`solution found (${solutionPath.length - 1} moves)`, 'success');
     play();
+    renderTrace(data.trace);
 
   } catch (err) {
     btnSolve.disabled = false;

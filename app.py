@@ -6,13 +6,12 @@ app = Flask(__name__)
 
 # map algorithm names from frontend to solver functions
 SOLVERS = {
-    "bfs":             bfs.solve,
-    "dfs":             dfs.solve,
-    "idfs":            idfs.solve,
+    "bfs": lambda board: bfs.solve(board),
+    "dfs": lambda board: dfs.solve(board),
+    "idfs": lambda board: idfs.solve(board),
     "astar_manhattan": lambda b: astar.solve(b, heuristic="manhattan"),
     "astar_euclidean": lambda b: astar.solve(b, heuristic="euclidean"),
 }
-
 
 @app.route("/")
 def index():

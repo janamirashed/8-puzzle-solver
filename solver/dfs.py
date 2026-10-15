@@ -57,12 +57,12 @@ def solve(initial_board, depth_limit=50, tracer=None):
             # Reverse children so they are popped in natural expansion order
             for child in reversed(current.get_children()):
                 if child.board in visited:
-                    tracer.child(child, "visited")
+                    status = "visited"
                 else:
                     visited.add(child.board)
                     stack.append(child)
-                    tracer.child(child, "queued")
-
+                    status = "queued"
+                tracer.child(child, status)
         tracer.end_step(stack, len(visited))
 
     return None

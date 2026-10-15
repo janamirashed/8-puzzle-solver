@@ -13,7 +13,6 @@ HEURISTICS = {
 def _peek(frontier, n):
     return [s for _, _, s in heapq.nsmallest(n, frontier)]
 
-
 def solve(initial_board, heuristic="manhattan"):
     if heuristic not in HEURISTICS:
         raise ValueError(f"Unknown heuristic '{heuristic}'. Choose from {list(HEURISTICS)}")
@@ -75,7 +74,6 @@ def solve(initial_board, heuristic="manhattan"):
                 status = "explored"
             elif child.g >= best_g.get(child.board, float("inf")):
                 status = "worse"
-                continue;
             else:
                 status = "queued"
                 best_g[child.board] = child.g

@@ -58,6 +58,7 @@ class Tracer:
         self._step["explored_size"] = explored_size
         self.steps.append(self._step)
         self._step = None
+        self.print_trace()
 
     def result(self):
         trace = {"structure": self.structure, "steps": self.steps,
@@ -66,3 +67,35 @@ class Tracer:
             trace["heuristic"] = self.heuristic
             trace["initial_h"] = round(self.initial_h, 2)
         return trace
+
+    def print_trace(self, max_steps=5):
+        print("\n" + "=" * 65)
+        print(f" SEARCH TRACE SNAPSHOT ({self.structure})")
+        print("=" * 65)
+
+        for step in self.steps[:max_steps]:
+            board = step["board"]
+            print(f"\n[STEP #{step['step']}] | Depth g(n): {step['g']} | Goal: {step['goal']}")
+            if self.informed:
+                print(f"Heuristic h(n): {step['h']} | Total Cost f(n): {step['f']}")
+            if "label" in step:
+                print(f"Iteration Label: {step['label']}")
+
+            print("-" * 35)
+            # Render 3x3 Grid
+            for i in range(0, 9, 3):
+                row = [str(x) if x != 0 else " " for x in board[i:i + 3]]
+                print(f"   | {' | '.join(row)} |")
+            print("-" * 35)
+
+            # Print Child Transitions
+            if step["children"]:
+                print(" Generated Children:")
+                for child in step["children"]:
+                    cost_str = f"g={child['g']}"
+                    if self.informed:
+                        cost_str += f", h={child['h']}, f={child['f']}"
+                    print(f"   -> Move {child['move']:<5} | Status: {child['status']:<8} | ({cost_str})")
+
+            print(f" Frontier Size: {step['frontier_size']} | Explored Size: {step['explored_size']}")
+            print("=" * 65)

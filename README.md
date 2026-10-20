@@ -23,11 +23,11 @@ The board detects when the goal state is reached and responds accordingly. Resul
 ## Screenshot
 
 <p align="center">
-  <img src="assets/demo.png" alt="8-Puzzle Solver Interface" width="100%" />
+  <img src="assets/ui/demo.png" alt="8-Puzzle Solver Interface" width="100%" />
 </p>
 
 <p align="center">
-  <img src="assets/trace.png" alt="8-Puzzle trace" width="100%" />
+  <img src="assets/ui/trace.png" alt="8-Puzzle trace" width="100%" />
 </p>
 
 ---

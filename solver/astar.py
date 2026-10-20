@@ -47,13 +47,14 @@ def solve(initial_board, heuristic="manhattan"):
     while frontier:
         _, _, current = heapq.heappop(frontier)
 
+        # the following condition is not redundant as we may have the same node twice with different costs, after exploring the cheaper one we need to skip the other
         if current.board in explored:
             continue
-        if current.g > best_g.get(current.board, float("inf")):
-            continue
 
+        # add current state to explored and increment the explored count
         explored.add(current.board)
         nodes_expanded += 1
+        # trace the parent node before expanding its children
         tracer.begin_step(current, nodes_expanded)
 
         if current.is_goal():
@@ -72,9 +73,9 @@ def solve(initial_board, heuristic="manhattan"):
         for child in current.get_children(h):
             if child.board in explored:
                 status = "explored"
-            elif child.g >= best_g.get(child.board, float("inf")):
+            elif child.g >= best_g.get(child.board, float("inf")): # a cheaper/similar version of this state has been already added to the frontier
                 status = "worse"
-            else:
+            else: # cheaper child & not explored before
                 status = "queued"
                 best_g[child.board] = child.g
                 max_search_depth = max(max_search_depth, child.g)
@@ -84,3 +85,11 @@ def solve(initial_board, heuristic="manhattan"):
         tracer.end_step(frontier, len(explored))
 
     return None
+
+# if we have state A with g = 10 then before expanding state A, we reached A with g = 5 (we will store both versions of A) --> lazy deletion --> we don't have decrease key
+# now we will explore A5 first then when we get to A10 we will find that A is explored so we will skip it
+
+
+# the following check is redundant because if we had a cheaper cost for the current state then it would be explored first and the (in explored?) check will catch it
+# if current.g > best_g.get(current.board, float("inf")):
+#     continue

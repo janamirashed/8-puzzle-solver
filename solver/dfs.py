@@ -28,12 +28,16 @@ def solve(initial_board, depth_limit=50, tracer=None):
         }
 
     stack = [initial_state]
-    visited = {initial_state.board}
+    explored_depth = {}
     nodes_expanded = 0
     max_search_depth = 0
 
     while stack:
         current = stack.pop()
+        if current.board in explored_depth and explored_depth[current.board] <= current.g:
+            continue
+
+        explored_depth[current.board] = current.g
         nodes_expanded += 1
         tracer.begin_step(current)
         if current.g > max_search_depth:
@@ -56,14 +60,13 @@ def solve(initial_board, depth_limit=50, tracer=None):
         if current.g < depth_limit:
             # Reverse children so they are popped in natural expansion order
             for child in reversed(current.get_children()):
-                if child.board in visited:
+                if child.board in explored_depth and explored_depth[child.board] <= child.g:
                     status = "visited"
                 else:
-                    visited.add(child.board)
-                    stack.append(child)
                     status = "queued"
+                    stack.append(child)
                 tracer.child(child, status)
-        tracer.end_step(stack, len(visited))
+        tracer.end_step(stack, len(explored_depth))
 
     return None
 

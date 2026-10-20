@@ -23,7 +23,7 @@ def solve(initial_board, max_depth=100):
 
             # If a valid path is found, return accumulated metrics
             if result["path"]:
-                result["nodes_expanded"] = total_nodes_expanded
+                result["nodes_expanded"] = tracer._total
                 result["search_depth"] = max_search_depth
                 result["running_time"] = round(time.time() - start_time, 5)
                 result["trace"] = tracer.result()
